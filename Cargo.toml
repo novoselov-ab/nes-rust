@@ -1,0 +1,21 @@
+[package]
+name = "nes-rust"
+version = "0.1.0"
+authors = ["Anton <novoselov.ab@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+"clap" = "2"
+wgpu = "0.5"
+# glsl-to-spirv = { version = "0.1", optional = true }
+# log = "0.4"
+imgui = "0.4"
+winit = "0.22"
+# raw-window-handle = "0.3"
+image = "0.23"
+futures = "0.3"
+imgui-winit-support = { version = "0.4", default-features = false, features = ["winit-22"] }
+rand = "0.7"
+glob = "0.3"

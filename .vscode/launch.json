@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "run nes-rust",
+            "program": "${workspaceRoot}\\target\\debug\\nes-rust.exe",
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "sourceFileMap": {}
+        }
+    ]
+}

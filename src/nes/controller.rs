@@ -1,4 +1,4 @@
-use super::bus::BusDevice;
+use super::bus::CpuBusDevice;
 use std::ops::Range;
 
 // Support only one for now
@@ -9,7 +9,7 @@ pub struct Controller {
     pub num: u16,
 }
 
-impl BusDevice for Controller {
+impl CpuBusDevice for Controller {
     fn get_addr_range(&self) -> &Range<u16> {
         if self.num == 0 {
             &(0x4016..0x4017)

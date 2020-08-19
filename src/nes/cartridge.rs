@@ -1,4 +1,4 @@
-use super::bus::BusDevice;
+use super::bus::CpuBusDevice;
 use std::fs;
 use std::ops::Range;
 use std::path::PathBuf;
@@ -13,7 +13,7 @@ pub struct Cartridge {
     vertical_mirror: bool,
 }
 
-impl BusDevice for Cartridge {
+impl CpuBusDevice for Cartridge {
     fn get_addr_range(&self) -> &Range<u16> {
         &(0x8000..0xFFFF)
     }

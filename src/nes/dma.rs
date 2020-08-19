@@ -1,9 +1,7 @@
-use super::bus::BusDevice;
+use super::bus::CpuBusDevice;
 use super::cpu::Cpu;
 use super::ppu::Ppu;
 use std::ops::Range;
-
-// Support only one for now
 
 pub struct DmaDevice {
     pub page: u8,
@@ -48,7 +46,7 @@ impl DmaDevice {
     }
 }
 
-impl BusDevice for DmaDevice {
+impl CpuBusDevice for DmaDevice {
     fn get_addr_range(&self) -> &Range<u16> {
         &(0x4014..0x4015)
     }

@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::ops::Range;
 use std::rc::Rc;
 
-use super::bus::BusDevice;
+use super::bus::CpuBusDevice;
 use super::cartridge::Cartridge;
 
 #[derive(Default, Clone)]
@@ -202,7 +202,7 @@ pub struct Ppu {
     pub fine_x: u8,
 }
 
-impl BusDevice for Ppu {
+impl CpuBusDevice for Ppu {
     fn get_addr_range(&self) -> &Range<u16> {
         &(0x2000..0x3FFF)
     }

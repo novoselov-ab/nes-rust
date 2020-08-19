@@ -81,7 +81,6 @@ impl UiTexture {
 // Screen is used to store and update screen buffer and draw it as window with a texture
 struct ScreenBuffer {
     ui_scale: f32,
-    ui_color: [f32; 4],
     texture: UiTexture,
 }
 
@@ -89,7 +88,6 @@ impl ScreenBuffer {
     fn new(renderer: &mut Renderer, device: &Device) -> Self {
         ScreenBuffer {
             ui_scale: 3.0_f32,
-            ui_color: [0.09_f32, 0.6_f32, 0.0_f32, 1.0_f32],
             texture: UiTexture::new(renderer, device, nes::ppu::SCREEN_SIZE),
         }
     }
@@ -104,11 +102,8 @@ impl ScreenBuffer {
                     self.texture.texture_id,
                     self.texture.get_size(self.ui_scale),
                 )
-                //.tint_col(self.ui_color)
                 .build(&ui);
                 ui.drag_float(im_str!("Scale"), &mut self.ui_scale).build();
-                ui.same_line(0.0);
-                imgui::ColorEdit::new(im_str!("Color"), &mut self.ui_color).build(&ui);
             });
     }
 

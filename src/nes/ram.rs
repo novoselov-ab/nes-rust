@@ -1,4 +1,4 @@
-use super::bus::BusDevice;
+use super::bus::CpuBusDevice;
 use std::ops::Range;
 
 const RAM_SIZE: u16 = 0x800;
@@ -8,7 +8,7 @@ pub struct Ram {
     pub bytes: Vec<u8>,
 }
 
-impl BusDevice for Ram {
+impl CpuBusDevice for Ram {
     fn get_addr_range(&self) -> &Range<u16> {
         &RAM_RANGE
     }

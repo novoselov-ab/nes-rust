@@ -3,7 +3,7 @@ use std::ops::Range;
 use std::rc::Rc;
 
 struct DeviceConnection {
-    device: Rc<RefCell<dyn BusDevice>>,
+    device: Rc<RefCell<dyn CpuBusDevice>>,
     addr_range: Range<u16>,
 }
 
@@ -11,7 +11,7 @@ pub struct Bus {
     connections: Vec<DeviceConnection>,
 }
 
-pub trait BusDevice {
+pub trait CpuBusDevice {
     fn get_addr_range(&self) -> &Range<u16>;
 
     fn cpu_write(&mut self, addr: u16, data: u8);
@@ -49,7 +49,7 @@ impl Bus {
         0
     }
 
-    pub fn connect(&mut self, device: Rc<RefCell<dyn BusDevice>>) {
+    pub fn connect(&mut self, device: Rc<RefCell<dyn CpuBusDevice>>) {
         let addr_range = device.borrow_mut().get_addr_range().clone();
         self.connections.push(DeviceConnection {
             device: device,

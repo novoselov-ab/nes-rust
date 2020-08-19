@@ -1,4 +1,4 @@
-use super::bus::BusDevice;
+use super::bus::CpuBusDevice;
 use std::ops::Range;
 
 const ADDR_RANGE: Range<u16> = 0x6000..0x7000;
@@ -7,7 +7,7 @@ pub struct Logger {
     pub bytes: Vec<u8>,
 }
 
-impl BusDevice for Logger {
+impl CpuBusDevice for Logger {
     fn get_addr_range(&self) -> &Range<u16> {
         &ADDR_RANGE
     }

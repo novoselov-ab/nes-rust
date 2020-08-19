@@ -18,11 +18,11 @@ impl BusDevice for Controller {
         }
     }
 
-    fn write(&mut self, _: u16, _: u8) {
+    fn cpu_write(&mut self, _: u16, _: u8) {
         self.state = self.input;
     }
 
-    fn read(&mut self, _: u16) -> u8 {
+    fn cpu_read(&mut self, _: u16) -> u8 {
         let data = ((self.state & 0x80) > 0) as u8;
         self.state <<= 1;
         data

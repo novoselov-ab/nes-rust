@@ -18,11 +18,11 @@ impl BusDevice for Cartridge {
         &(0x8000..0xFFFF)
     }
 
-    fn write(&mut self, addr: u16, data: u8) {
+    fn cpu_write(&mut self, addr: u16, data: u8) {
         self.mapper.map_write(addr, data);
     }
 
-    fn read(&mut self, addr: u16) -> u8 {
+    fn cpu_read(&mut self, addr: u16) -> u8 {
         let mapped_addr = self.mapper.map_read(addr);
         self.prg_rom[(mapped_addr as usize)]
     }

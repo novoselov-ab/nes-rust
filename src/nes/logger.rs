@@ -12,11 +12,11 @@ impl BusDevice for Logger {
         &ADDR_RANGE
     }
 
-    fn write(&mut self, addr: u16, data: u8) {
+    fn cpu_write(&mut self, addr: u16, data: u8) {
         self.bytes[(addr - 0x6000) as usize] = data;
     }
 
-    fn read(&mut self, _: u16) -> u8 {
+    fn cpu_read(&mut self, _: u16) -> u8 {
         0
     }
 }

@@ -467,7 +467,7 @@ impl Cpu {
             return;
         }
 
-        let ins_code = self.bus.read(self.PC);
+        let ins_code = self.bus.cpu_read(self.PC);
         self.PC += 1;
 
         let ins = &INSTRUCTION_LOOKUP[ins_code as usize];
@@ -480,17 +480,17 @@ impl Cpu {
                 self.PC = addr;
             }
             Opcode::LDX => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 self.X = v as u8;
                 self.flags.set_zn(self.X);
             }
             Opcode::LDA => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 self.A = v as u8;
                 self.flags.set_zn(self.A);
             }
             Opcode::LDY => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 self.Y = v as u8;
                 self.flags.set_zn(self.Y);
             }
@@ -566,16 +566,16 @@ impl Cpu {
                 }
             }
             Opcode::STA => {
-                self.bus.write(addr, self.A);
+                self.bus.cpu_write(addr, self.A);
             }
             Opcode::STX => {
-                self.bus.write(addr, self.X);
+                self.bus.cpu_write(addr, self.X);
             }
             Opcode::STY => {
-                self.bus.write(addr, self.Y);
+                self.bus.cpu_write(addr, self.Y);
             }
             Opcode::BIT => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 let r = self.A & (v as u8);
                 self.flags.Z = r == 0;
                 self.flags.O = (v & (1 << 6)) != 0;
@@ -596,37 +596,37 @@ impl Cpu {
                 self.flags.set_zn(self.A);
             }
             Opcode::CMP => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 self.flags.C = self.A >= v;
                 self.flags.set_zn(self.A.wrapping_sub(v));
             }
             Opcode::CPX => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 self.flags.C = self.X >= v;
                 self.flags.set_zn(self.X.wrapping_sub(v));
             }
             Opcode::CPY => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 self.flags.C = self.Y >= v;
                 self.flags.set_zn(self.Y.wrapping_sub(v));
             }
             Opcode::AND => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 self.A = self.A & v;
                 self.flags.set_zn(self.A);
             }
             Opcode::ORA => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 self.A = self.A | v;
                 self.flags.set_zn(self.A);
             }
             Opcode::EOR => {
-                let v = self.bus.read(addr);
+                let v = self.bus.cpu_read(addr);
                 self.A = self.A ^ v;
                 self.flags.set_zn(self.A);
             }
             Opcode::ADC => {
-                let v = self.bus.read(addr) as u16;
+                let v = self.bus.cpu_read(addr) as u16;
                 let res: u16 = (self.A as u16) + v + (self.flags.C as u16);
                 self.flags.C = res > 0xFF;
                 self.flags.O = !((self.A as u16) ^ v) & ((self.A as u16) ^ res) & 0x80 != 0;
@@ -634,7 +634,7 @@ impl Cpu {
                 self.flags.set_zn(self.A);
             }
             Opcode::SBC => {
-                let mut v = self.bus.read(addr) as u16;
+                let mut v = self.bus.cpu_read(addr) as u16;
                 v = v ^ 0x00FF;
                 let res: u16 = (self.A as u16) + v + (self.flags.C as u16);
                 self.flags.C = res > 0xFF;
@@ -682,16 +682,16 @@ impl Cpu {
                 self.SP = self.X;
             }
             Opcode::INC => {
-                let mut v = self.bus.read(addr);
+                let mut v = self.bus.cpu_read(addr);
                 v = v.wrapping_add(1);
                 self.flags.set_zn(v);
-                self.bus.write(addr, v);
+                self.bus.cpu_write(addr, v);
             }
             Opcode::DEC => {
-                let mut v = self.bus.read(addr);
+                let mut v = self.bus.cpu_read(addr);
                 v = v.wrapping_sub(1);
                 self.flags.set_zn(v);
-                self.bus.write(addr, v);
+                self.bus.cpu_write(addr, v);
             }
             Opcode::RTI => {
                 let flag = self.pop();
@@ -702,7 +702,7 @@ impl Cpu {
                 let data = if ins.mode == AddressingMode::ACC {
                     addr
                 } else {
-                    self.bus.read(addr) as u16
+                    self.bus.cpu_read(addr) as u16
                 };
 
                 let prev_c = self.flags.C;
@@ -716,14 +716,14 @@ impl Cpu {
                 if ins.mode == AddressingMode::ACC {
                     self.A = res;
                 } else {
-                    self.bus.write(addr, res);
+                    self.bus.cpu_write(addr, res);
                 }
             }
             Opcode::ASL | Opcode::ROL => {
                 let data = if ins.mode == AddressingMode::ACC {
                     addr
                 } else {
-                    self.bus.read(addr) as u16
+                    self.bus.cpu_read(addr) as u16
                 };
 
                 let prev_c = self.flags.C;
@@ -737,7 +737,7 @@ impl Cpu {
                 if ins.mode == AddressingMode::ACC {
                     self.A = res;
                 } else {
-                    self.bus.write(addr, res);
+                    self.bus.cpu_write(addr, res);
                 }
             }
             Opcode::BRK => {
@@ -774,7 +774,7 @@ impl Cpu {
     }
 
     fn push(&mut self, v: u8) {
-        self.bus.write(0x0100 + self.SP as u16, v);
+        self.bus.cpu_write(0x0100 + self.SP as u16, v);
         self.SP -= 1;
     }
 
@@ -785,7 +785,7 @@ impl Cpu {
 
     fn pop(&mut self) -> u8 {
         self.SP += 1;
-        return self.bus.read(0x0100 + self.SP as u16);
+        return self.bus.cpu_read(0x0100 + self.SP as u16);
     }
 
     fn pop_u16(&mut self) -> u16 {
@@ -814,22 +814,22 @@ impl Cpu {
 
     fn read_from_location(&mut self, v: u8) -> u16 {
         return to_u16(
-            self.bus.read(v.wrapping_add(1) as u16),
-            self.bus.read(v as u16),
+            self.bus.cpu_read(v.wrapping_add(1) as u16),
+            self.bus.cpu_read(v as u16),
         );
     }
 
     fn read_from_location_u16(&mut self, v: u16) -> u16 {
         return to_u16(
-            self.bus.read(v.wrapping_add(1) as u16),
-            self.bus.read(v as u16),
+            self.bus.cpu_read(v.wrapping_add(1) as u16),
+            self.bus.cpu_read(v as u16),
         );
     }
 
     fn read_addr_abs(&mut self) -> u16 {
-        let lo = self.bus.read(self.PC);
+        let lo = self.bus.cpu_read(self.PC);
         self.PC += 1;
-        let hi = self.bus.read(self.PC);
+        let hi = self.bus.cpu_read(self.PC);
         self.PC += 1;
         return to_u16(hi, lo);
     }
@@ -857,14 +857,14 @@ impl Cpu {
 
         // NES had a bug on page boundary -> simulate it:
         if addr & 0x00FF == 0x00FF {
-            return to_u16(self.bus.read(addr & 0xFF00), self.bus.read(addr));
+            return to_u16(self.bus.cpu_read(addr & 0xFF00), self.bus.cpu_read(addr));
         }
 
-        return to_u16(self.bus.read(addr + 1), self.bus.read(addr));
+        return to_u16(self.bus.cpu_read(addr + 1), self.bus.cpu_read(addr));
     }
 
     fn read_addr_izx(&mut self) -> u16 {
-        let mut addr = self.bus.read(self.PC);
+        let mut addr = self.bus.cpu_read(self.PC);
         self.PC += 1;
 
         addr = addr.wrapping_add(self.X);
@@ -873,7 +873,7 @@ impl Cpu {
     }
 
     fn read_addr_izy(&mut self) -> u16 {
-        let addr = self.bus.read(self.PC);
+        let addr = self.bus.cpu_read(self.PC);
         self.PC += 1;
 
         let x = self.read_from_location(addr);
@@ -899,27 +899,27 @@ impl Cpu {
     }
 
     fn read_addr_zp0(&mut self) -> u16 {
-        let x = self.bus.read(self.PC);
+        let x = self.bus.cpu_read(self.PC);
         self.PC += 1;
         return x as u16;
     }
 
     fn read_addr_zpx(&mut self) -> u16 {
-        let mut x = (self.bus.read(self.PC) as u16) + (self.X as u16);
+        let mut x = (self.bus.cpu_read(self.PC) as u16) + (self.X as u16);
         x = x & 0x00FF;
         self.PC += 1;
         return x;
     }
 
     fn read_addr_zpy(&mut self) -> u16 {
-        let mut x = (self.bus.read(self.PC) as u16) + (self.Y as u16);
+        let mut x = (self.bus.cpu_read(self.PC) as u16) + (self.Y as u16);
         x = x & 0x00FF;
         self.PC += 1;
         return x;
     }
 
     fn read_addr_rel(&mut self) -> u16 {
-        let x = self.bus.read(self.PC);
+        let x = self.bus.cpu_read(self.PC);
 
         self.PC += 1;
         return ((self.PC as i16) + (x as i8) as i16) as u16;

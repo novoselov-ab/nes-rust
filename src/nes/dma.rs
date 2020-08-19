@@ -35,7 +35,7 @@ impl DmaDevice {
             }
         } else {
             if clock % 2 == 0 {
-                self.data = cpu.bus.read((self.page as u16) << 8 | (self.addr as u16));
+                self.data = cpu.bus.cpu_read((self.page as u16) << 8 | (self.addr as u16));
             } else {
                 ppu.write_oam(self.addr, self.data);
                 self.addr = self.addr.wrapping_add(1);
@@ -53,13 +53,13 @@ impl BusDevice for DmaDevice {
         &(0x4014..0x4015)
     }
 
-    fn write(&mut self, _: u16, data: u8) {
+    fn cpu_write(&mut self, _: u16, data: u8) {
         self.page = data;
         self.addr = 0x00;
         self.transfer = true;
     }
 
-    fn read(&mut self, _: u16) -> u8 {
+    fn cpu_read(&mut self, _: u16) -> u8 {
         0
     }
 }

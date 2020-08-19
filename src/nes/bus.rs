@@ -14,8 +14,8 @@ pub struct Bus {
 pub trait BusDevice {
     fn get_addr_range(&self) -> &Range<u16>;
 
-    fn write(&mut self, addr: u16, data: u8);
-    fn read(&mut self, addr: u16) -> u8;
+    fn cpu_write(&mut self, addr: u16, data: u8);
+    fn cpu_read(&mut self, addr: u16) -> u8;
 }
 
 impl Bus {
@@ -25,11 +25,11 @@ impl Bus {
         }
     }
 
-    pub fn write(&mut self, addr: u16, data: u8) {
+    pub fn cpu_write(&mut self, addr: u16, data: u8) {
         for connection in &mut self.connections {
             if connection.addr_range.contains(&addr) {
                 let mut device = connection.device.borrow_mut();
-                device.write(addr, data);
+                device.cpu_write(addr, data);
                 return;
             }
         }
@@ -37,11 +37,11 @@ impl Bus {
         //panic!("no device with range: {} to write to.", addr);
     }
 
-    pub fn read(&mut self, addr: u16) -> u8 {
+    pub fn cpu_read(&mut self, addr: u16) -> u8 {
         for connection in &mut self.connections {
             if connection.addr_range.contains(&addr) {
                 let mut device = connection.device.borrow_mut();
-                return device.read(addr);
+                return device.cpu_read(addr);
             }
         }
         //panic!("no device with range: {} to read from.", addr);
@@ -70,13 +70,13 @@ mod tests {
         let r1 = Rc::new(RefCell::new(Ram::new()));
         b.connect(r1.clone());
 
-        b.write(25, 16);
+        b.cpu_write(25, 16);
 
         assert_eq!(r1.borrow_mut().bytes[5], 0);
         assert_eq!(r1.borrow_mut().bytes[25], 16);
 
-        assert_eq!(b.read(25), 16);
-        assert_eq!(b.read(24), 0);
-        assert_eq!(b.read(5), 0);
+        assert_eq!(b.cpu_read(25), 16);
+        assert_eq!(b.cpu_read(24), 0);
+        assert_eq!(b.cpu_read(5), 0);
     }
 }

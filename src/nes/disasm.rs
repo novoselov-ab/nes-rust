@@ -88,14 +88,14 @@ impl fmt::Display for Opcode {
 
 #[allow(dead_code)]
 pub fn disasm(out: &mut impl Write, bus: &mut Bus, addr: u16) {
-    let ins_code = bus.read(addr);
+    let ins_code = bus.cpu_read(addr);
 
     let ins = &INSTRUCTION_LOOKUP[ins_code as usize];
 
     let ins_size = get_instruction_size(ins);
     for i in 0..4 {
         if i < ins_size {
-            write!(out, "{:02X} ", bus.read(addr + i)).unwrap();
+            write!(out, "{:02X} ", bus.cpu_read(addr + i)).unwrap();
         } else {
             write!(out, "   ").unwrap();
         }

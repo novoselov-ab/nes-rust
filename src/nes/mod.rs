@@ -96,7 +96,7 @@ impl Emulator {
         write!(f, "{:04X} ", self.cpu.PC).unwrap();
         disasm::disasm(f, &mut self.cpu.bus, self.cpu.PC);
 
-        let ins_code = self.cpu.bus.read(self.cpu.PC);
+        let ins_code = self.cpu.bus.cpu_read(self.cpu.PC);
         let ins = &INSTRUCTION_LOOKUP[ins_code as usize];
         let mut addr_str = String::new();
         match ins.mode {
@@ -105,8 +105,8 @@ impl Emulator {
                 addr_str = format!(
                     "${:04X} ",
                     to_u16(
-                        self.cpu.bus.read(self.cpu.PC + 2),
-                        self.cpu.bus.read(self.cpu.PC + 1)
+                        self.cpu.bus.cpu_read(self.cpu.PC + 2),
+                        self.cpu.bus.cpu_read(self.cpu.PC + 1)
                     )
                 );
             }
@@ -114,8 +114,8 @@ impl Emulator {
                 addr_str = format!(
                     "${:04X},X ",
                     to_u16(
-                        self.cpu.bus.read(self.cpu.PC + 2),
-                        self.cpu.bus.read(self.cpu.PC + 1)
+                        self.cpu.bus.cpu_read(self.cpu.PC + 2),
+                        self.cpu.bus.cpu_read(self.cpu.PC + 1)
                     )
                 );
             }
@@ -123,23 +123,23 @@ impl Emulator {
                 addr_str = format!(
                     "${:04X},Y ",
                     to_u16(
-                        self.cpu.bus.read(self.cpu.PC + 2),
-                        self.cpu.bus.read(self.cpu.PC + 1)
+                        self.cpu.bus.cpu_read(self.cpu.PC + 2),
+                        self.cpu.bus.cpu_read(self.cpu.PC + 1)
                     )
                 );
             }
             AddressingMode::REL => {
                 addr_str = format!(
                     "${:04X} ",
-                    self.cpu.PC + self.cpu.bus.read(self.cpu.PC + 1) as u16 + 2
+                    self.cpu.PC + self.cpu.bus.cpu_read(self.cpu.PC + 1) as u16 + 2
                 );
             }
             AddressingMode::IND => {
                 addr_str = format!(
                     "(${:04X}) ",
                     to_u16(
-                        self.cpu.bus.read(self.cpu.PC + 2),
-                        self.cpu.bus.read(self.cpu.PC + 1)
+                        self.cpu.bus.cpu_read(self.cpu.PC + 2),
+                        self.cpu.bus.cpu_read(self.cpu.PC + 1)
                     )
                 );
             }
@@ -148,22 +148,22 @@ impl Emulator {
                 addr_str = format!("A ");
             }
             AddressingMode::IMM => {
-                addr_str = format!("#${:02X} ", self.cpu.bus.read(self.cpu.PC + 1));
+                addr_str = format!("#${:02X} ", self.cpu.bus.cpu_read(self.cpu.PC + 1));
             }
             AddressingMode::ZP0 => {
-                addr_str = format!("${:02X} ", self.cpu.bus.read(self.cpu.PC + 1));
+                addr_str = format!("${:02X} ", self.cpu.bus.cpu_read(self.cpu.PC + 1));
             }
             AddressingMode::IZX => {
-                addr_str = format!("(${:02X},X) ", self.cpu.bus.read(self.cpu.PC + 1));
+                addr_str = format!("(${:02X},X) ", self.cpu.bus.cpu_read(self.cpu.PC + 1));
             }
             AddressingMode::IZY => {
-                addr_str = format!("(${:02X}),Y ", self.cpu.bus.read(self.cpu.PC + 1));
+                addr_str = format!("(${:02X}),Y ", self.cpu.bus.cpu_read(self.cpu.PC + 1));
             }
             AddressingMode::ZPX => {
-                addr_str = format!("${:02X},X ", self.cpu.bus.read(self.cpu.PC + 1));
+                addr_str = format!("${:02X},X ", self.cpu.bus.cpu_read(self.cpu.PC + 1));
             }
             AddressingMode::ZPY => {
-                addr_str = format!("${:02X},Y ", self.cpu.bus.read(self.cpu.PC + 1));
+                addr_str = format!("${:02X},Y ", self.cpu.bus.cpu_read(self.cpu.PC + 1));
             }
         }
         write!(f, "{:<20}", addr_str).unwrap();

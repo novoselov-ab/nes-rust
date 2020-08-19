@@ -207,7 +207,7 @@ impl BusDevice for Ppu {
         &(0x2000..0x3FFF)
     }
 
-    fn write(&mut self, addr: u16, data: u8) {
+    fn cpu_write(&mut self, addr: u16, data: u8) {
         match addr & 0x0007 {
             0x0000 => {
                 self.ctrl.set_byte(data);
@@ -262,7 +262,7 @@ impl BusDevice for Ppu {
         }
     }
 
-    fn read(&mut self, addr: u16) -> u8 {
+    fn cpu_read(&mut self, addr: u16) -> u8 {
         let mut data: u8 = 0;
 
         match addr & 0x0007 {

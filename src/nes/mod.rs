@@ -225,10 +225,10 @@ impl Emulator {
 
 impl FrameTime {
     pub fn update(&mut self, dt: f32) -> bool {
-        // Limit to 30 fps
+        // Limit to 60 fps
         self.dt_accum += dt;
         self.dt += dt;
-        const FRAME_TIME: f32 = 1.0 / 30.0;
+        const FRAME_TIME: f32 = 1.0 / 60.0;
         if self.dt_accum < FRAME_TIME {
             return false;
         }
